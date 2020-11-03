@@ -10,13 +10,11 @@
 <body>
     <h2 class="text-center my-5 titulo">Appointment Manager</h2>
     <div class="container mt-5 p-5">
-        <div id="contenido" class="row">
+        <div id="box" class="row">
             <div class="col-md-6 agregar-cita">
-                <form id="nueva-cita">
-                    <div class="d-flex justify-content-center align-items-center py-3">
-                        <img class="" src="https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2017/10/30/15093416326666.jpg" alt="">
-                        <legend >Pet´s Data</legend>
-                    </div>
+                <form id="form">
+                    <img class="img-fluid" src="https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2017/10/30/15093416326666.jpg" alt="">
+                    <legend >Pet´s Data</legend>
                     <div class="form-group ">
                         <label class="font-weight-bold">Name:</label>
                         <input type="text" id="pet" name="pet" class="form-control" placeholder="Pet's name">
@@ -41,6 +39,7 @@
                         <label class="font-weight-bold">Symptoms:</label>
                         <textarea id="symptoms" name="symptoms" class="form-control"></textarea>
                     </div>
+                    <div id="alert"></div>
                     <button type="submit" class="btn btn-info btn-block">Create Appointment</button>
                 </form>
             </div>
