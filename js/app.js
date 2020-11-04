@@ -7,6 +7,7 @@ const symptomsInput = document.querySelector('#symptoms');
 const form = document.querySelector('#form');
 const containerAppointment = document.querySelector('#appointments');
 let editing;
+let db;
 
 const addDataAppointment = event => dataAppointment[event.target.name] = event.target.value;
 
@@ -19,6 +20,7 @@ const dataAppointment = {
     symptoms: ''
 }
 
+window.addEventListener('load', createDB);
 petInput.addEventListener('input', addDataAppointment);
 ownerInput.addEventListener('input', addDataAppointment);
 phoneInput.addEventListener('input', addDataAppointment);
@@ -53,49 +55,61 @@ class UI {
         setTimeout( () => p.remove(), 5000 );
     }
 
-    printAppointment({appointments}) {
+    printAppointment() {
         this.cleanHTML();
-        appointments.forEach( appointment => {
-            const { pet, owner, phone, date, hour, symptoms, id } = appointment;
+        //read db
+        const objectStore = db.transaction('appointments').objectStore('appointments');
 
-            const divAppointment = document.createElement('div');
-            divAppointment.classList.add('cita', 'p-3');
-            divAppointment.dataset.id = id;
-            const petP = document.createElement('h2');
-            petP.classList.add('card-title', 'font-weight-bolder');
-            petP.textContent = pet;
-            const ownerP = document.createElement('p');
-            ownerP.innerHTML = `<span class="font-weight-bolder">Owner: </span> ${owner}`;
-            const phoneP = document.createElement('p');
-            phoneP.innerHTML = `<span class="font-weight-bolder">Phone: </span> ${phone}`;
-            const dateP = document.createElement('p');
-            dateP.innerHTML = `<span class="font-weight-bolder">Date: </span> ${date}`;
-            const hourP = document.createElement('p');
-            hourP.innerHTML = `<span class="font-weight-bolder">Hour: </span> ${hour}`;
-            const symptomsP = document.createElement('p');
-            symptomsP.innerHTML = `<span class="font-weight-bolder">symptoms: </span> ${symptoms}`;
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('btn', 'btn-danger', 'mr-2');
-            deleteBtn.innerHTML = 'Delete <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-            deleteBtn.onclick = () => deleteAppointment(id);
+        //openCursor is an iterator
+        objectStore.openCursor().onsuccess = function(e){
+            const cursor = e.target.result;
 
-            const editBtn = document.createElement('button');
-            editBtn.classList.add('btn', 'btn-info');
-            editBtn.innerHTML = 'Edit <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
-            editBtn.onclick = () => loadEditionMode(appointment);
+            if(cursor){
+                const { pet, owner, phone, date, hour, symptoms, id } = cursor.value;
 
-            divAppointment.appendChild(petP);
-            divAppointment.appendChild(ownerP);
-            divAppointment.appendChild(phoneP);
-            divAppointment.appendChild(dateP);
-            divAppointment.appendChild(hourP);
-            divAppointment.appendChild(symptomsP);
-            divAppointment.appendChild(deleteBtn);
-            divAppointment.appendChild(editBtn);
-            
-            containerAppointment.appendChild(divAppointment);
-        });
+                const divAppointment = document.createElement('div');
+                divAppointment.classList.add('cita', 'p-3');
+                divAppointment.dataset.id = id;
+                const petP = document.createElement('h2');
+                petP.classList.add('card-title', 'font-weight-bolder');
+                petP.textContent = pet;
+                const ownerP = document.createElement('p');
+                ownerP.innerHTML = `<span class="font-weight-bolder">Owner: </span> ${owner}`;
+                const phoneP = document.createElement('p');
+                phoneP.innerHTML = `<span class="font-weight-bolder">Phone: </span> ${phone}`;
+                const dateP = document.createElement('p');
+                dateP.innerHTML = `<span class="font-weight-bolder">Date: </span> ${date}`;
+                const hourP = document.createElement('p');
+                hourP.innerHTML = `<span class="font-weight-bolder">Hour: </span> ${hour}`;
+                const symptomsP = document.createElement('p');
+                symptomsP.innerHTML = `<span class="font-weight-bolder">symptoms: </span> ${symptoms}`;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('btn', 'btn-danger', 'mr-2');
+                deleteBtn.innerHTML = 'Delete <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                deleteBtn.onclick = () => deleteAppointment(id);
+
+                const editBtn = document.createElement('button');
+                editBtn.classList.add('btn', 'btn-info');
+                editBtn.innerHTML = 'Edit <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
+                const appointment = cursor.value;
+                editBtn.onclick = () => loadEditionMode(appointment);
+
+                divAppointment.appendChild(petP);
+                divAppointment.appendChild(ownerP);
+                divAppointment.appendChild(phoneP);
+                divAppointment.appendChild(dateP);
+                divAppointment.appendChild(hourP);
+                divAppointment.appendChild(symptomsP);
+                divAppointment.appendChild(deleteBtn);
+                divAppointment.appendChild(editBtn);
+                
+                containerAppointment.appendChild(divAppointment);
+
+                //next element
+                cursor.continue();
+            }
+        }  
     }
     cleanHTML() {
         while(containerAppointment.firstChild) {
@@ -118,18 +132,39 @@ function newAppointment(event) {
 
     if(editing) {
         ui.printAlert('Editing ...', 'edite mode');
-        manageAppointments.editAppointment({...dataAppointment})
-        form.querySelector('button[type="submit"]').textContent = 'Create Appointment';
-        editando = false;
+
+        //edit indexDB
+        const transaction = db.transaction(['appointments'],'readwrite');
+        const objectStore = transaction.objectStore('appointments');
+        objectStore.put(dataAppointment);
+        transaction.oncomplete = function(){
+            manageAppointments.editAppointment({...dataAppointment})
+            form.querySelector('button[type="submit"]').textContent = 'Create Appointment';
+            editando = false;
+        }
+        transaction.onerror = function(){
+            console.log('Something wrong happened');
+        }
     } else {
         dataAppointment.id = Date.now();
         manageAppointments.addAppointment({...dataAppointment});
-        ui.printAlert('The Appointment was created successfully', 'success');
+
+        //Insert in indexDB
+        const transaction = db.transaction(['appointments'], 'readwrite');
+
+        const objectStore = transaction.objectStore('appointments');
+
+        objectStore.add(dataAppointment);
+
+        transaction.oncomplete = function(){
+            console.log('Appointment added');
+            ui.printAlert('The Appointment was created successfully', 'success');
+        }
     }
 
+    ui.printAppointment();
     dataAppointmentReset();
     form.reset();
-    ui.printAppointment(manageAppointments);
 }
 
 function dataAppointmentReset() {
@@ -142,9 +177,18 @@ function dataAppointmentReset() {
 }
 
 function deleteAppointment(id) {
-    manageAppointments.deleteAppointmentById(id);
-    ui.printAlert('The Appointment was deleted correctly', 'success');
-    ui.printAppointment(manageAppointments);
+    // manageAppointments.deleteAppointmentById(id);
+    const transaction = db.transaction(['appointments'],'readwrite');
+    const objectStore = transaction.objectStore('appointments');
+    objectStore.delete(id);
+    transaction.oncomplete = function(){
+        console.log(`Appointment ${id} deleted`);
+        ui.printAlert('The Appointment was deleted correctly', 'success');
+        ui.printAppointment();
+    }
+    transaction.onerror = function(){
+        console.log('Sonething failure');
+    }
 }
 
 function loadEditionMode(appointment) {
@@ -167,4 +211,34 @@ function loadEditionMode(appointment) {
 
     form.querySelector('button[type="submit"]').textContent = 'Save Changes';
     editing = true;
+}
+
+function createDB(){
+    const createDB = window.indexedDB.open('appointments', 1);
+    //if error
+    createDB.onerror = function(){
+        console.log('Something failure')
+    }
+    //if success
+    createDB.onsuccess = function(){
+        console.log('DB created');
+        db = createDB.result;
+        ui.printAppointment();
+    }
+    //define schema
+    createDB.onupgradeneeded = function(e) {
+        const db = e.target.result;
+
+        const objectStore = db.createObjectStore('appointments', {keyPath: 'id', autoIncrement:true});
+
+        objectStore.createIndex('pet', 'pet', {unique: false});
+        objectStore.createIndex('owner', 'owner', {unique: false});
+        objectStore.createIndex('phone', 'phone', {unique: false});
+        objectStore.createIndex('date', 'date', {unique: false});
+        objectStore.createIndex('hour', 'hour', {unique: false});
+        objectStore.createIndex('symptoms', 'symptoms', {unique: false});
+        objectStore.createIndex('id', 'id', {unique: true});
+
+        console.log('DB created and ready');
+    }
 }
