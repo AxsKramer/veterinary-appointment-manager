@@ -1,0 +1,13 @@
+textarea {
+    height: 200px !important;
+}
+
+svg {
+    width: 21px;
+}
+
+img{
+    width: 200px;
+    height: 100px;
+    border-radius: 20px;
+}
