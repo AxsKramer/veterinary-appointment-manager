@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react'
+import React, {Fragment, useState, useEffect} from 'react'
 import Header from '../components/Header';
 import Layout from '../components/Layout';
 import Form from '../components/Form'
@@ -13,8 +13,22 @@ const App = () => {
         date: '',
         hour: '',
         symptoms: ''
-    })
-    const [appointments, setAppointments] = useState([]);
+    });
+
+    //Local Storage
+    let initialappointments = JSON.parse(localStorage.getItem('appointments'));
+    if(!initialappointments){
+        initialappointments = [];
+    }
+    const [appointments, setAppointments] = useState(initialappointments);
+
+
+    useEffect(() => {
+        initialappointments
+        ? localStorage.setItem('appointments', JSON.stringify(appointments))
+        : localStorage.setItem('appointments', JSON.stringify([]));
+    }, [appointments])
+    
 
     const addDataAppointment = (event) => setDataAppointment({...dataAppointment, [event.target.name]: event.target.value});
 
