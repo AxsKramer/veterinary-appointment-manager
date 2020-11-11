@@ -1,4 +1,4 @@
-import { addDataAppointment, newAppointment} from './functions.js';
+import { addDataAppointment, newAppointment } from './functions';
 
 const petInput = document.querySelector('#pet');
 const ownerInput = document.querySelector('#owner');

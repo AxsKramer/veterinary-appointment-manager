@@ -4,7 +4,8 @@
   "description": "This project is a basic appointment manager and it is builded in different branches to show different ways to build this project and use some tools like modules, dev tools like indexedDB and tool like webpack including babel and eslint.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "dev": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,13 @@
     "@babel/cli": "^7.12.1",
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
+    "babel-loader": "8.2.1",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.22.1",
     "webpack": "4.44.1",
-    "webpack-cli": "3.3.12"
+    "webpack-cli": "3.3.12",
+    "webpack-dev-server": "3.11.0"
   }
 }
